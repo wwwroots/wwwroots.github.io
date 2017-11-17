@@ -172,7 +172,7 @@
 
         
         <a href="/2017/hello-world/" class="archive-article-date">
-  	<time datetime="2017-11-17T09:33:49.259Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-17</time>
+  	<time datetime="2017-11-17T10:05:12.242Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-17</time>
 </a>
         
       </header>
@@ -188,7 +188,22 @@
 <p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-<p><img src="/hello-world/1.jpeg" alt="tupian1"><br><img src="/hello-world/2.jpeg" alt="tupian2"><br><img src="/hello-world/3.jpeg" alt="tupian3"></p>
+<h3 id="插入图片"><a href="#插入图片" class="headerlink" title="插入图片"></a>插入图片</h3><p>修改_config.yml配置文件post_asset_folder项为true.<br>在source/_post文件夹建立一个和“text.md”文件名一直得“text1”的文件夹,放入图片1.jpg</p>
+<p>插入图片</p>
+<blockquote>
+
+</blockquote>
+<h3 id="创建自定义网页"><a href="#创建自定义网页" class="headerlink" title="创建自定义网页"></a>创建自定义网页</h3><p>网页编写完成后，在Hexo\source目录下创建一个文件夹,将 index.html 文件放置于此文件夹 </p>
+<h4 id="跳过渲染"><a href="#跳过渲染" class="headerlink" title="跳过渲染"></a>跳过渲染</h4><p>使用编辑器打开 Hexo 目录下的_config.yml文件，找到skip_render<br>skip_render一般有以下四种常用参数：<br>1.跳过source目录下的 test.html: skip_render: test.html</p>
+<p>2.跳过source目录下 test 文件夹内所有文件：skip_render: test/*</p>
+<p>3.跳过source目录下 test 文件夹内所有文件包括子文件夹以及子文件夹内的文件：skip_render: test/**</p>
+<p>4.跳过多个路径：skip_render:</p>
+<ul>
+<li>test.html</li>
+<li>test/*</li>
+</ul>
+<p>_config.yml对格式要求严格，注意填写参数时的格式，添加完成后便不会渲染指定文件/文件夹。<br>如果网页引用了 css 或 js ，并将整个网页目录设置为跳过渲染，则不必再为 css 和 js 创建外链，可以直接引用.</p>
+<p><img src="/hello-world/1.jpeg" alt="tupian1"><br><img src="/2017/hello-world/2.jpeg" alt="haha" title="haha"></p>
 
       
 
