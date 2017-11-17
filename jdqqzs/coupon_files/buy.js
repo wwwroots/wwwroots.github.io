@@ -13,7 +13,58 @@ $(function(){
    oHeight=(oFH-oSH)/2;
    oS.css('margin-top',oHeight);
    
-   for(var i=0; i<of.length;i++){ 200="" $(of[i]).mouseover(function(){="" $(this).css('background-color','#f9f8f9');="" $(this).mouseout(function(){="" $(this).css('background-color','#fff');="" });="" };="" })();="" (function(){="" var="" oa="$('.conNav" li.active="" a');="" oi="$('.conNav" i');="" owidth="oA.width()+40-oI.width();" oi.css('left',owidth="" 2);="" bopt="" (function="" ()="" {="" abtn="$('.bopt" .btn');="" oheight2="32px" ;="" abtn.each(function="" (index)="" $(this).click(function="" if="" ($(this).parent().prev().css('height')="=" oheight2)="" $(this).parent().parent().parent().parent().prev().prev().children().eq(1).css('display',="" 'none');="" oheight="$(this).parent().prev().children().eq(0).height();" $(this).parent().prev().animate({="" 'height':="" },="" 500);="" }="" else="" minheight="0;" ocon="$('.content');" oconrh="$('.content" aside').height()="" +="" 350;="" windowsheight="$(window).height();" (windowsheight="" -=""> oConRH) {
+   for(var i=0; i<oF.length;i++){
+       $(oF[i]).mouseover(function(){
+           $(this).css('background-color','#f9f8f9');
+           $(this).mouseout(function(){
+               $(this).css('background-color','#fff');
+           });
+       });
+           
+   };
+    
+         
+})();   
+   
+(function(){
+    var oA=$('.conNav li.active a');
+    var oI=$('.conNav li.active i');
+    
+    oWidth=oA.width()+40-oI.width();
+    
+    oI.css('left',oWidth/2);
+    
+})(); 
+   
+//bopt
+(function () {
+    var aBtn = $('.bopt .btn');
+    var oHeight2 = "32px";
+
+    aBtn.each(function (index) {
+        $(this).click(function () {
+            if ($(this).parent().prev().css('height') == oHeight2) {
+                $(this).parent().parent().parent().parent().prev().prev().children().eq(1).css('display', 'none');
+                var oHeight = $(this).parent().prev().children().eq(0).height();
+                $(this).parent().prev().animate({ 'height': oHeight }, 500);
+            } else {
+                $(this).parent().prev().animate({ 'height': oHeight2 }, 500);
+
+            };
+        });
+    });
+
+
+})();
+
+    (function () {
+        var minHeight = 0;
+    var oCon=$('.content');
+    var oConRH = $('.content aside').height() + 350;
+
+    var windowsHeight = $(window).height();
+
+    if (windowsHeight - 200 > oConRH) {
         minHeight = windowsHeight - 200;
     }
     else {
@@ -28,7 +79,7 @@ $(function(){
 
 GetHotProductList();
 
-    //Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //Ê±¼ä²î²å¼þ
 $('.timeago').timeago();
 
     //scroll
@@ -86,7 +137,7 @@ function GetHotProductList() {
             var hotProductListStr = "";
             for (var i = 0; i < data.ProductList.length; i++)
             {
-                hotProductListStr += '<a onmousedown="AddView(' + data.ProductList[i].ProductId + ', \'Title&Price&Img\')" href="/Home/Detail/' + data.ProductList[i].ProductId + '" class="clear" target="_blank"> <img class="fl" src="' + data.ProductList[i].Pic + '"> <span class="fl"><i class="bcolor1">' + data.ProductList[i].Price + '</i> ' + data.ProductList[i].Title + '</span> </a>'
+                hotProductListStr += '<a onmousedown="AddView(' + data.ProductList[i].ProductId + ', \'Title&Price&Img\')" href="/Home/Detail/' + data.ProductList[i].ProductId + '" class="clear" target="_blank"> <img class="fl" src="' + data.ProductList[i].Pic + '" /> <span class="fl"><i class="bcolor1">' + data.ProductList[i].Price + '</i> ' + data.ProductList[i].Title + '</span> </a>'
             }
             $("#HotProductList").html(hotProductListStr);
         },
@@ -95,13 +146,13 @@ function GetHotProductList() {
     });
 }
 
-//ï¿½ï¿½×ªÒ³ï¿½ï¿½
+//Ìø×ªÒ³Âë
 function ChangePageIndex(pageIndex) {
     $("#PageIndex").val(pageIndex);
     Submit();
 }
 
-//Í¼Æ¬ï¿½È±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//Í¼Æ¬µÈ±ÈÀýËõ·Å
 function AutoResizeImage(maxWidth, maxHeight, objImg) {
     var img = new Image();
     img.src = objImg.src;
@@ -119,8 +170,25 @@ function AutoResizeImage(maxWidth, maxHeight, objImg) {
     } else if (maxHeight == 0) {
         if (wRatio < 1) Ratio = wRatio;
     } else if (wRatio < 1 || hRatio < 1) {
-        Ratio = (wRatio <= hratio="" ?="" wratio="" :="" hratio);="" }="" else="" if="" (wratio=""> 1 || hRatio > 1) {
-        Ratio = (wRatio <= hratio="" ?="" wratio="" :="" hratio);="" }="" w="w" *="" ratio;="" h="h" objimg.height="h;" objimg.width="w;" function="" ispc()="" {="" var="" useragentinfo="navigator.userAgent;" agents="["Android"," "iphone",="" "symbianos",="" "windows="" phone",="" "ipad",="" "ipod"];="" flag="true;" for="" (var="" v="0;" <="" agents.length;="" v++)="" if="" (useragentinfo.indexof(agents[v])=""> 0) {
+        Ratio = (wRatio <= hRatio ? wRatio : hRatio);
+    }
+    else if (wRatio > 1 || hRatio > 1) {
+        Ratio = (wRatio <= hRatio ? wRatio : hRatio);
+    }
+    w = w * Ratio;
+    h = h * Ratio;
+    objImg.height = h;
+    objImg.width = w;
+}
+
+function IsPC() {
+    var userAgentInfo = navigator.userAgent;
+    var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+    var flag = true;
+    for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
             flag = false;
             break;
         }
@@ -139,4 +207,3 @@ function AutoResizeImage(maxWidth, maxHeight, objImg) {
 })();
 
 
-</=></=></of.length;i++){>
