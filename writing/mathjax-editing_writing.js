@@ -70,7 +70,7 @@ function mjpd() {
     //
     //  The math is in blocks i through j, so
     //    collect it into one block and clear the others.
-    //  Replace &, <, and > by named entities.
+    //  Replace &, <, and=""> by named entities.
     //  For IE, put <br> at the ends of comments since IE removes \n.
     //  Clear the current math positions and store the index of the
     //    math, then push the math string onto the storage array.
@@ -78,12 +78,11 @@ function mjpd() {
     function processMath(i, j) {
         var block = blocks.slice(i, j + 1).join("")
             .replace(/&/g, "&amp;") // use HTML entity for &
-            .replace(/</g, "&lt;")  // use HTML entity for <
-            .replace(/>/g, "&gt;")  // use HTML entity for >
+            .replace(//g, "&gt;")  // use HTML entity for >
         ;
         if (indent) block = block.replace(/\n    /g, "\n");
         if (HUB.Browser.isMSIE) {
-            block = block.replace(/(%[^\n]*)\n/g, "$1<br/>\n");
+            block = block.replace(/(%[^\n]*)\n/g, "$1<br>\n");
         }
         while (j > i) blocks[j--] = "";
         blocks[i] = "@@" + math.length + "@@";
@@ -372,4 +371,4 @@ function mjpd() {
             this.cancelTypeset = true;
         };
     }
-})();
+})();</,>

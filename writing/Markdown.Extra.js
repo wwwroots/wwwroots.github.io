@@ -3,13 +3,8 @@
   // This isn't supposed to be foolproof. It's just a quick way to make sure we
   // keep all span-level tags returned by a pagedown converter. It should allow
   // all span-level tags through, with or without attributes.
-  var inlineTags = new RegExp(['^(<\\/?(a|abbr|acronym|applet|area|b|basefont|',
-                               'bdo|big|button|cite|code|del|dfn|em|figcaption|',
-                               'font|i|iframe|img|input|ins|kbd|label|map|',
-                               'mark|meter|object|param|progress|q|ruby|rp|rt|s|',
-                               'samp|script|select|small|span|strike|strong|',
-                               'sub|sup|textarea|time|tt|u|var|wbr)[^>]*>|',
-                               '<(br)\\s?\\/?>)$'].join(''), 'i');
+  var inlineTags = new RegExp(['^(<\\ ?(a|abbr|acronym|applet|area|b|basefont|',="" 'bdo|big|button|cite|code|del|dfn|em|figcaption|',="" 'font|i|iframe|img|input|ins|kbd|label|map|',="" 'mark|meter|object|param|progress|q|ruby|rp|rt|s|',="" 'samp|script|select|small|span|strike|strong|',="" 'sub|sup|textarea|time|tt|u|var|wbr)[^="">]*>|',
+                               '<(br)\\s?\\ ?="">)$'].join(''), 'i');
 
   /******************************************************************
    * Utility Functions                                              *
@@ -263,7 +258,7 @@
   // Return a placeholder containing a key, which is the block's index in the
   // hashBlocks array. We wrap our output in a <p> tag here so Pagedown won't.
   Markdown.Extra.prototype.hashExtraBlock = function(block) {
-    return '\n<p>~X' + (this.hashBlocks.push(block) - 1) + 'X</p>\n';
+    return '\n</p><p>~X' + (this.hashBlocks.push(block) - 1) + 'X</p>\n';
   };
   Markdown.Extra.prototype.hashExtraInline = function(block) {
     return '~X' + (this.hashBlocks.push(block) - 1) + 'X';
@@ -275,7 +270,7 @@
     var self = this;
     function recursiveUnHash() {
       var hasHash = false;
-      text = text.replace(/(?:<p>)?~X(\d+)X(?:<\/p>)?/g, function(wholeMatch, m1) {
+      text = text.replace(/(?:<p>)?~X(\d+)X(?:<\ p="">)?/g, function(wholeMatch, m1) {
         hasHash = true;
         var key = parseInt(m1, 10);
         return self.hashBlocks[key];
@@ -344,7 +339,7 @@
   Markdown.Extra.prototype.applyAttributeBlocks = function(text) {
     var self = this;
     var blockRe = new RegExp('<p>~XX(\\d+)XX</p>[\\s]*' +
-                             '(?:<(h[1-6]|pre)(?: +class="(\\S+)")?(>[\\s\\S]*?</\\2>))', "gm");
+                             '(?:<(h[1-6]|pre)(?: +class="(\\S+)" )?(="">[\\s\\S]*?))', "gm");
     text = text.replace(blockRe, function(wholeMatch, k, tag, cls, rest) {
       if (!tag) // no following header or fenced code block.
         return '';
@@ -369,97 +364,14 @@
       if (classes.length > 0)
         classStr = ' class="' + classes.join(' ') + '"';
 
-      return "<" + tag + idStr + classStr + rest;
-    });
-
-    return text;
-  };
-
-  /******************************************************************
-   * Tables                                                         *
-   *****************************************************************/
-
-  // Find and convert Markdown Extra tables into html.
-  Markdown.Extra.prototype.tables = function(text) {
-    var self = this;
-
-    var leadingPipe = new RegExp(
-      ['^'                         ,
-       '[ ]{0,3}'                  , // Allowed whitespace
-       '[|]'                       , // Initial pipe
-       '(.+)\\n'                   , // $1: Header Row
-
-       '[ ]{0,3}'                  , // Allowed whitespace
-       '[|]([ ]*[-:]+[-| :]*)\\n'  , // $2: Separator
-
-       '('                         , // $3: Table Body
-         '(?:[ ]*[|].*\\n?)*'      , // Table rows
-       ')',
-       '(?:\\n|$)'                   // Stop at final newline
-      ].join(''),
-      'gm'
-    );
-
-    var noLeadingPipe = new RegExp(
-      ['^'                         ,
-       '[ ]{0,3}'                  , // Allowed whitespace
-       '(\\S.*[|].*)\\n'           , // $1: Header Row
-
-       '[ ]{0,3}'                  , // Allowed whitespace
-       '([-:]+[ ]*[|][-| :]*)\\n'  , // $2: Separator
-
-       '('                         , // $3: Table Body
-         '(?:.*[|].*\\n?)*'        , // Table rows
-       ')'                         ,
-       '(?:\\n|$)'                   // Stop at final newline
-      ].join(''),
-      'gm'
-    );
-
-    text = text.replace(leadingPipe, doTable);
-    text = text.replace(noLeadingPipe, doTable);
-
-    // $1 = header, $2 = separator, $3 = body
-    function doTable(match, header, separator, body, offset, string) {
-      // remove any leading pipes and whitespace
-      header = header.replace(/^ *[|]/m, '');
-      separator = separator.replace(/^ *[|]/m, '');
-      body = body.replace(/^ *[|]/gm, '');
-
-      // remove trailing pipes and whitespace
-      header = header.replace(/[|] *$/m, '');
-      separator = separator.replace(/[|] *$/m, '');
-      body = body.replace(/[|] *$/gm, '');
-
-      // determine column alignments
-      var alignspecs = separator.split(/ *[|] */);
-      var align = [];
-      for (var i = 0; i < alignspecs.length; i++) {
-        var spec = alignspecs[i];
-        if (spec.match(/^ *-+: *$/m))
-          align[i] = ' align="right"';
-        else if (spec.match(/^ *:-+: *$/m))
-          align[i] = ' align="center"';
-        else if (spec.match(/^ *:-+ *$/m))
-          align[i] = ' align="left"';
-        else align[i] = '';
-      }
-
-      // TODO: parse spans in header and rows before splitting, so that pipes
-      // inside of tags are not interpreted as separators
-      var headers = header.split(/ *[|] */);
-      var colCount = headers.length;
-
-      // build html
-      var cls = self.tableClass ? ' class="' + self.tableClass + '"' : '';
-      var html = ['<table', cls, '>\n', '<thead>\n', '<tr>\n'].join('');
+      return "<" +="" tag="" idstr="" classstr="" rest;="" });="" return="" text;="" };="" ******************************************************************="" *="" tables="" *****************************************************************="" find="" and="" convert="" markdown="" extra="" into="" html.="" markdown.extra.prototype.tables="function(text)" {="" var="" self="this;" leadingpipe="new" regexp(="" ['^'="" ,="" '[="" ]{0,3}'="" allowed="" whitespace="" '[|]'="" initial="" pipe="" '(.+)\\n'="" $1:="" header="" row="" '[|]([="" ]*[-:]+[-|="" :]*)\\n'="" $2:="" separator="" '('="" $3:="" table="" body="" '(?:[="" ]*[|].*\\n?)*'="" rows="" ')',="" '(?:\\n|$)'="" stop="" at="" final="" newline="" ].join(''),="" 'gm'="" );="" noleadingpipe="new" '(\\s.*[|].*)\\n'="" '([-:]+[="" ]*[|][-|="" '(?:.*[|].*\\n?)*'="" ')'="" text="text.replace(leadingPipe," dotable);="" $1="header," $2="separator," $3="body" function="" dotable(match,="" header,="" separator,="" body,="" offset,="" string)="" remove="" any="" leading="" pipes="" *[|]="" m,="" '');="" gm,="" trailing="" *$="" determine="" column="" alignments="" alignspecs="separator.split(/" align="[];" for="" (var="" i="0;" <="" alignspecs.length;="" i++)="" spec="alignspecs[i];" if="" (spec.match(="" ^="" *-+:="" m))="" align[i]=" align="right"" ;="" else="" *:-+:="" *:-+="" }="" todo:="" parse="" spans="" in="" before="" splitting,="" so="" that="" inside="" of="" tags="" are="" not="" interpreted="" as="" separators="" headers="header.split(/" colcount="headers.length;" build="" html="" cls="self.tableClass" ?="" '="" class="' + self.tableClass + '" :="" '';="" cls,="">\n', '<thead>\n', '<tr>\n'].join('');
 
       // build column headers.
       for (i = 0; i < colCount; i++) {
         var headerHtml = convertSpans(trim(headers[i]), self);
-        html += ["  <th", align[i], ">", headerHtml, "</th>\n"].join('');
+        html += ["  <th", align[i],="" "="">", headerHtml, "\n"].join('');
       }
-      html += "</tr>\n</thead>\n";
+      html += "</th",></tr>\n</thead>\n";
 
       // build rows
       var rows = body.split('\n');
@@ -476,12 +388,12 @@
         html += "<tr>\n";
         for (j = 0; j < colCount; j++) {
           var colHtml = convertSpans(trim(rowCells[j]), self);
-          html += ["  <td", align[j], ">", colHtml, "</td>\n"].join('');
+          html += ["  <td", align[j],="" "="">", colHtml, "\n"].join('');
         }
-        html += "</tr>\n";
+        html += "</td",></tr>\n";
       }
 
-      html += "</table>\n";
+      html += "\n";
 
       // replace html with placeholder until postConversion step
       return self.hashExtraBlock(html);
@@ -547,21 +459,13 @@
     }
 
     text += '\n\n<div class="footnotes">\n<hr>\n<ol>\n\n';
-    for(var i=0; i<self.usedFootnotes.length; i++) {
-      var id = self.usedFootnotes[i];
-      var footnote = self.footnotes[id];
-      self.isConvertingFootnote = true;
-      var formattedfootnote = convertSpans(footnote, self);
-      delete self.isConvertingFootnote;
-      text += '<li id="fn:'
-        + id
-        + '">'
+    for(var i=0; i<self.usedfootnotes.length; i++)="" {="" var="" id="self.usedFootnotes[i];" footnote="self.footnotes[id];" self.isconvertingfootnote="true;" formattedfootnote="convertSpans(footnote," self);="" delete="" self.isconvertingfootnote;="" text="" +="<li id="fn:" '"="">'
         + formattedfootnote
         + ' <a href="#fnref:'
         + id
-        + '" title="Return to article" class="reversefootnote">&#8617;</a></li>\n\n';
+        + '" title="Return to article" class="reversefootnote">&#8617;</a>\n\n';
     }
-    text += '</ol>\n</div>';
+    text += '</self.usedfootnotes.length;></ol>\n</div>';
     return text;
   };
   
@@ -574,8 +478,7 @@
   Markdown.Extra.prototype.fencedCodeBlocks = function(text) {
     function encodeCode(code) {
       code = code.replace(/&/g, "&amp;");
-      code = code.replace(/</g, "&lt;");
-      code = code.replace(/>/g, "&gt;");
+      code = code.replace(//g, "&gt;");
       // These were escaped by PageDown before postNormalization 
       code = code.replace(/~D/g, "$$");
       code = code.replace(/~T/g, "~");
@@ -598,8 +501,8 @@
         }
       }
 
-      var html = ['<pre', preclass, '><code', codeclass, '>',
-                  encodeCode(codeblock), '</code></pre>'].join('');
+      var html = ['<pre', preclass,="" '=""><code', codeclass,="" '="">',
+                  encodeCode(codeblock), ''].join('');
 
       // replace codeblock with placeholder until postConversion step
       return self.hashExtraBlock(html);
@@ -618,7 +521,7 @@
     var result = '';
     var blockOffset = 0;
     // Here we parse HTML in a very bad manner
-    text.replace(/(?:<!--[\s\S]*?-->)|(<)([a-zA-Z1-6]+)([^\n]*?>)([\s\S]*?)(<\/\2>)/g, function(wholeMatch, m1, m2, m3, m4, m5, offset) {
+    text.replace(/(?:<!--[\s\S]*?-->)|(<)([a-za-z1-6]+)([^\n]*?>)([\s\S]*?)(<\ \2="">)/g, function(wholeMatch, m1, m2, m3, m4, m5, offset) {
       var token = text.substring(blockOffset, offset);
       result += self.applyPants(token);
       self.smartyPantsLastChar = result.substring(result.length - 1);
@@ -718,7 +621,7 @@
     this.smartyPantsLastChar = '';
     text = this.educatePants(text);
     // Clean everything inside html tags (some of them may have been converted due to our rough html parsing)
-    text = text.replace(/(<([a-zA-Z1-6]+)\b([^\n>]*?)(\/)?>)/g, revertPants);
+    text = text.replace(/(<([a-za-z1-6]+)\b([^\n>]*?)(\/)?>)/g, revertPants);
     return text;
   };
   
@@ -865,10 +768,11 @@
 
   Markdown.Extra.prototype.newlines = function(text) {
     // We have to ignore already converted newlines and line breaks in sub-list items
-    return text.replace(/(<(?:br|\/li)>)?\n/g, function(wholeMatch, previousTag) {
+    return text.replace(/(<(?:br|\ li)="">)?\n/g, function(wholeMatch, previousTag) {
       return previousTag ? wholeMatch : " <br>\n";
     });
   };
   
 })();
 
+</(?:br|\></dt></([a-za-z1-6]+)\b([^\n></=></=></\></)([a-za-z1-6]+)([^\n]*?></code',></pre',></"></(h[1-6]|pre)(?:></\></p></[^></(br)\\s?\\></\\>

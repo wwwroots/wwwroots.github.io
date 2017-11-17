@@ -389,17 +389,13 @@ else
             text = text.replace(/
                 (                       // save in $1
                     ^                   // start of line  (with /m)
-                    <($block_tags_a)    // start tag = $2
-                    \b                  // word break
-                                        // attacklab: hack around khtml/pcre bug...
-                    [^\r]*?\n           // any number of lines, minimally matching
-                    </\2>               // the matching end tag
+                    <($block_tags_a) start="" tag="$2" \b="" word="" break="" attacklab:="" hack="" around="" khtml="" pcre="" bug...="" [^\r]*?\n="" any="" number="" of="" lines,="" minimally="" matching="" <="" \2="">               // the matching end tag
                     [ \t]*              // trailing spaces/tabs
                     (?=\n+)             // followed by a newline
                 )                       // attacklab: there are sentinel newlines at end of document
             /gm,function(){...}};
             */
-            text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm, hashMatch);
+            text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\ \2="">[ \t]*(?=\n+))/gm, hashMatch);
 
             //
             // Now match more liberally, simply from `\n<tag>` to `</tag>\n`
@@ -409,19 +405,15 @@ else
             text = text.replace(/
                 (                       // save in $1
                     ^                   // start of line  (with /m)
-                    <($block_tags_b)    // start tag = $2
-                    \b                  // word break
-                                        // attacklab: hack around khtml/pcre bug...
-                    [^\r]*?             // any number of lines, minimally matching
-                    .*</\2>             // the matching end tag
+                    <($block_tags_b) start="" tag="$2" \b="" word="" break="" attacklab:="" hack="" around="" khtml="" pcre="" bug...="" [^\r]*?="" any="" number="" of="" lines,="" minimally="" matching="" .*<="" \2="">             // the matching end tag
                     [ \t]*              // trailing spaces/tabs
                     (?=\n+)             // followed by a newline
                 )                       // attacklab: there are sentinel newlines at end of document
             /gm,function(){...}};
             */
-            text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math)\b[^\r]*?.*<\/\2>[ \t]*(?=\n+)\n)/gm, hashMatch);
+            text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math)\b[^\r]*?.*<\ \2="">[ \t]*(?=\n+)\n)/gm, hashMatch);
 
-            // Special case just for <hr />. It was easier to make a special case than
+            // Special case just for <hr>. It was easier to make a special case than
             // to make the other regex more complicated.  
 
             /*
@@ -429,9 +421,7 @@ else
                 \n                  // Starting after a blank line
                 [ ]{0,3}
                 (                   // save in $1
-                    (<(hr)          // start tag = $2
-                        \b          // word break
-                        ([^<>])*?
+                    (<(hr) start="" tag="$2" \b="" word="" break="" ([^<="">])*?
                     \/?>)           // the matching end tag
                     [ \t]*
                     (?=\n{2,})      // followed by a blank line
@@ -467,9 +457,7 @@ else
                 (                   // save in $1
                     [ ]{0,3}        // attacklab: g_tab_width - 1
                     (?:
-                        <([?%])     // $2
-                        [^\r]*?
-                        \2>
+                        <([?%]) $2="" [^\r]*?="" \2="">
                     )
                     [ \t]*
                     (?=\n{2,})      // followed by a blank line
@@ -504,7 +492,7 @@ else
             text = _DoHeaders(text);
 
             // Do Horizontal Rules:
-            var replacement = "<hr />\n";
+            var replacement = "<hr>\n";
             text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, replacement);
             text = text.replace(/^[ ]{0,2}([ ]?-[ ]?){3,}[ \t]*$/gm, replacement);
             text = text.replace(/^[ ]{0,2}([ ]?_[ ]?){3,}[ \t]*$/gm, replacement);
@@ -542,7 +530,7 @@ else
             text = _DoImages(text);
             text = _DoAnchors(text);
 
-            // Make links out of things like `<http://example.com/>`
+            // Make links out of things like `<http: example.com="">`
             // Must come after _DoAnchors(), because you can use < and >
             // delimiters in inline links like [this](<url>).
             text = _DoAutoLinks(text);
@@ -571,10 +559,10 @@ else
 
             // SE: changed the comment part of the regex
 
-            var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--(?:|(?:[^>-]|-[^>])(?:[^-]|-[^-])*)--)>)/gi;
+            var regex = /(<[a-z\ !$]("[^"]*"|'[^']*'|[^'"="">])*>|<!(--(?:|(?:[^>-]|-[^>])(?:[^-]|-[^-])*)--)>)/gi;
 
             text = text.replace(regex, function (wholeMatch) {
-                var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g, "$1`");
+                var tag = wholeMatch.replace(/(.)<\ ?code="">(?=.)/g, "$1`");
                 tag = escapeCharacters(tag, wholeMatch.charAt(1) == "!" ? "\\`*_/" : "\\`*_"); // also escape slashes in comments to prevent autolinking there -- http://meta.stackexchange.com/questions/95987
                 return tag;
             });
@@ -712,15 +700,7 @@ else
             }
             url = attributeSafeUrl(url);
 
-            var result = "<a href=\"" + url + "\"";
-
-            if (title != "") {
-                title = attributeEncode(title);
-                title = escapeCharacters(title, "*_");
-                result += " title=\"" + title + "\"";
-            }
-
-            result += ">" + link_text + "</a>";
+            var result = "<a href="\""" +="" url="" "\"";="" if="" (title="" !="" )="" {="" title="attributeEncode(title);" "*_");="" result="" "="" }="" link_text="" "<="" a="">";
 
             return result;
         }
@@ -791,50 +771,7 @@ else
         function attributeEncode(text) {
             // unconditionally replace angle brackets here -- what ends up in an attribute (e.g. alt or title)
             // never makes sense to have verbatim HTML in it (and the sanitizer would totally break it)
-            return text.replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-        }
-
-        function writeImageTag(wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
-            var whole_match = m1;
-            var alt_text = m2;
-            var link_id = m3.toLowerCase();
-            var url = m4;
-            var title = m7;
-
-            if (!title) title = "";
-
-            if (url == "") {
-                if (link_id == "") {
-                    // lower-case and turn embedded newlines into spaces
-                    link_id = alt_text.toLowerCase().replace(/ ?\n/g, " ");
-                }
-                url = "#" + link_id;
-
-                if (g_urls.get(link_id) != undefined) {
-                    url = g_urls.get(link_id);
-                    if (g_titles.get(link_id) != undefined) {
-                        title = g_titles.get(link_id);
-                    }
-                }
-                else {
-                    return whole_match;
-                }
-            }
-            
-            alt_text = escapeCharacters(attributeEncode(alt_text), "*_[]()");
-            url = escapeCharacters(url, "*_");
-            var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
-
-            // attacklab: Markdown.pl adds empty title attributes to images.
-            // Replicate this bug.
-
-            //if (title != "") {
-            title = attributeEncode(title);
-            title = escapeCharacters(title, "*_");
-            result += " title=\"" + title + "\"";
-            //}
-
-            result += " />";
+            return text.replace(/>/g, "&gt;").replace(/";
 
             return result;
         }
@@ -878,7 +815,7 @@ else
             text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm,
                 function (wholeMatch, m1, m2) {
                     var h_level = m1.length;
-                    return "<h" + h_level + ">" + _RunSpanGamut(m2) + "</h" + h_level + ">\n\n";
+                    return "<h" +="" h_level="" "="">" + _RunSpanGamut(m2) + "</h">\n\n";
                 }
             );
 
@@ -929,15 +866,12 @@ else
 
                     var result = _ProcessListItems(list, list_type, isInsideParagraphlessListItem);
 
-                    // Trim any trailing whitespace, to put the closing `</$list_type>`
+                    // Trim any trailing whitespace, to put the closing ``
                     // up on the preceding line, to get it past the current stupid
                     // HTML block parser. This is a hack to work around the terrible
                     // hack that is the HTML block parser.
                     result = result.replace(/\s+$/, "");
-                    var opening = "<" + list_type;
-                    if (first_number && first_number !== 1)
-                        opening += " start=\"" + first_number + "\"";
-                    result = opening + ">" + result + "</" + list_type + ">\n";
+                    var opening = "<" +="" list_type;="" if="" (first_number="" &&="" first_number="" !="=" 1)="" opening="" "="" "\"";="" result="opening">" + result + "</">\n";
                     return result;
                 });
             } else {
@@ -953,11 +887,7 @@ else
                         first_number = parseInt(m3, 10)
 
                     var result = _ProcessListItems(list, list_type);
-                    var opening = "<" + list_type;
-                    if (first_number && first_number !== 1)
-                        opening += " start=\"" + first_number + "\"";
-
-                    result = runup + opening + ">\n" + result + "</" + list_type + ">\n";
+                    var opening = "<" +="" list_type;="" if="" (first_number="" &&="" first_number="" !="=" 1)="" opening="" "="" "\"";="" result="runup">\n" + result + "</">\n";
                     return result;
                 });
             }
@@ -1052,7 +982,7 @@ else
                             item = _RunSpanGamut(item);
                     }
                     last_item_had_a_double_newline = ends_with_double_newline;
-                    return "<li>" + item + "</li>\n";
+                    return "</li><li>" + item + "</li>\n";
                 }
             );
 
@@ -1171,8 +1101,7 @@ else
             text = text.replace(/&/g, "&amp;");
 
             // Do the angle bracket song and dance:
-            text = text.replace(/</g, "&lt;");
-            text = text.replace(/>/g, "&gt;");
+            text = text.replace(//g, "&gt;");
 
             // Now, escape characters that are magic in Markdown:
             text = escapeCharacters(text, "\*_{}[]\\", false);
@@ -1359,7 +1288,7 @@ else
                     bq = bq.replace(/(^|\n)/g, "$1  ");
                     // These leading spaces screw with <pre> content, so we need to fix that:
                     bq = bq.replace(
-                            /(\s*<pre>[^\r]+?<\/pre>)/gm,
+                            /(\s*<pre>[^\r]+?<\ pre="">)/gm,
                         function (wholeMatch, m1) {
                             var pre = m1;
                             // attacklab: hack around Konqueror 3.5.4 bug:
@@ -1390,7 +1319,7 @@ else
             var markerRe = /~K(\d+)K/;
 
             //
-            // Wrap <p> tags.
+            // Wrap </p><p> tags.
             //
             var end = grafs.length;
             for (var i = 0; i < end; i++) {
@@ -1402,7 +1331,7 @@ else
                 }
                 else if (/\S/.test(str)) {
                     str = _RunSpanGamut(str);
-                    str = str.replace(/^([ \t]*)/g, "<p>");
+                    str = str.replace(/^([ \t]*)/g, "</p><p>");
                     str += "</p>"
                     grafsOut.push(str);
                 }
@@ -1434,24 +1363,7 @@ else
             //   http://bumppo.net/projects/amputator/
             text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, "&amp;");
 
-            // Encode naked <'s
-            text = text.replace(/<(?![a-z\/?!]|~D)/gi, "&lt;");
-
-            return text;
-        }
-
-        function _EncodeBackslashEscapes(text) {
-            //
-            //   Parameter:  String.
-            //   Returns:    The string, with after processing the following backslash
-            //               escape sequences.
-            //
-
-            // attacklab: The polite way to do this is with the new
-            // escapeCharacters() function:
-            //
-            //     text = escapeCharacters(text,"\\",true);
-            //     text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
+            // Encode naked <'s text="text.replace(/<(?![a-z\/?!]|~D)/gi," "&lt;");="" return="" text;="" }="" function="" _encodebackslashescapes(text)="" {="" parameter:="" string.="" returns:="" the="" string,="" with="" after="" processing="" following="" backslash="" escape="" sequences.="" attacklab:="" polite="" way="" to="" do="" this="" is="" new="" escapecharacters()="" function:="">#+-.!",true);
             //
             // ...but we're sidestepping its use of the (slow) RegExp constructor
             // as an optimization for Firefox.  This function gets called a LOT.
@@ -1463,63 +1375,27 @@ else
 
         var charInsideUrl = "[-A-Z0-9+&@#/%?=~_|[\\]()!:,.;]",
             charEndingUrl = "[-A-Z0-9+&@#/%=~_|[\\])]",
-            autoLinkRegex = new RegExp("(=\"|<)?\\b(https?|ftp)(://" + charInsideUrl + "*" + charEndingUrl + ")(?=$|\\W)", "gi"),
-            endCharRegex = new RegExp(charEndingUrl, "i");
-
-        function handleTrailingParens(wholeMatch, lookbehind, protocol, link) {
-            if (lookbehind)
-                return wholeMatch;
-            if (link.charAt(link.length - 1) !== ")")
-                return "<" + protocol + link + ">";
+            autoLinkRegex = new RegExp("(=\"|<)?\\b(https?|ftp)(: "="" +="" charinsideurl="" "*"="" charendingurl="" ")(?="$|\\W)"," "gi"),="" endcharregex="new" regexp(charendingurl,="" "i");="" function="" handletrailingparens(wholematch,="" lookbehind,="" protocol,="" link)="" {="" if="" (lookbehind)="" return="" wholematch;="" (link.charat(link.length="" -="" 1)="" !="=" ")")="" "<"="" protocol="" link="">";
             var parens = link.match(/[()]/g);
             var level = 0;
             for (var i = 0; i < parens.length; i++) {
                 if (parens[i] === "(") {
-                    if (level <= 0)
-                        level = 1;
-                    else
-                        level++;
-                }
-                else {
-                    level--;
-                }
-            }
-            var tail = "";
-            if (level < 0) {
-                var re = new RegExp("\\){1," + (-level) + "}$");
-                link = link.replace(re, function (trailingParens) {
-                    tail = trailingParens;
-                    return "";
-                });
-            }
-            if (tail) {
-                var lastChar = link.charAt(link.length - 1);
-                if (!endCharRegex.test(lastChar)) {
-                    tail = lastChar + tail;
-                    link = link.substr(0, link.length - 1);
-                }
-            }
-            return "<" + protocol + link + ">" + tail;
+                    if (level <= 0)="" level="1;" else="" level++;="" }="" {="" level--;="" var="" tail="" ;="" if="" (level="" <="" re="new" regexp("\\){1,"="" +="" (-level)="" "}$");="" link="link.replace(re," function="" (trailingparens)="" return="" "";="" });="" (tail)="" lastchar="link.charAt(link.length" -="" 1);="" (!endcharregex.test(lastchar))="" tail;="" link.length="" "<"="" protocol="" "="">" + tail;
         }
         
         function _DoAutoLinks(text) {
 
             // note that at this point, all other URL in the text are already hyperlinked as <a href=""></a>
-            // *except* for the <http://www.foo.com> case
+            // *except* for the <http: www.foo.com=""> case
 
             // automatically add < and > around unadorned raw hyperlinks
-            // must be preceded by a non-word character (and not by =" or <) and followed by non-word/EOF character
-            // simulating the lookbehind in a consuming way is okay here, since a URL can neither and with a " nor
-            // with a <, so there is no risk of overlapping matches.
-            text = text.replace(autoLinkRegex, handleTrailingParens);
-
-            //  autolink anything like <http://example.com>
+            // must be preceded by a non-word character (and not by =" or <) and="" followed="" by="" non-word="" eof="" character="" simulating="" the="" lookbehind="" in="" a="" consuming="" way="" is="" okay="" here,="" since="" url="" can="" neither="" with="" "="" nor="" <,="" so="" there="" no="" risk="" of="" overlapping="" matches.="" text="text.replace(autoLinkRegex," handletrailingparens);="" autolink="" anything="" like="" <http:="" example.com="">
             
 
             var replacer = function (wholematch, m1) {
                 var url = attributeSafeUrl(m1);
                 
-                return "<a href=\"" + url + "\">" + pluginHooks.plainLinkText(m1) + "</a>";
+                return "<a href="\""" +="" url="" "\"="">" + pluginHooks.plainLinkText(m1) + "</a>";
             };
             text = text.replace(/<((https?|ftp):[^'">\s]+)>/gi, replacer);
 
@@ -1628,4 +1504,4 @@ else
 
     }; // end of the Markdown.Converter constructor
 
-})();
+})();</(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)></address@domain.foo></((https?|ftp):[^'"></)></http:></=></)?\\b(https?|ftp)(:></'s></\></pre></pre></em></strong></strong></strong></code></pre></a></a></\></[a-z\></url></http:></p></([?%])[^\r]*?\2></([?%])></%...%></(hr)\b([^<></(hr)></(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math)\b[^\r]*?.*<\></($block_tags_b)></(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\></($block_tags_a)></p></a>
