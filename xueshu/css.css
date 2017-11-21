@@ -425,7 +425,7 @@ BODY {
 	BACKGROUND: #ffffec
 }
 .banquan {
-	FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, verdana, simsum; WIDTH: 1000px; FLOAT: left; COLOR: #999; MARGIN: 20px 0px 50px; LINE-HEIGHT: 22px
+	FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, verdana, simsum; WIDTH: 1000px; FLOAT: left; COLOR: #999; MARGIN: 0; LINE-HEIGHT: 22px
 }
 .banquan A:link {
 	COLOR: #999
